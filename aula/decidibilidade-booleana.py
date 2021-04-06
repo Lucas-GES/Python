@@ -1,42 +1,130 @@
-        # expr = self._expr
-        # #for variavel in variaveis:
-        # #   expr = expr.replace(variaveis, variaveis[variavel])
+#!/usr/bin/env python3
 
-        # while True:
-        #     esq, op, dir = expr.partition('*')
-        #     if op == '':
-        #         break
+from typing import Dict, List, Union, Set
+import abc
 
-        #     result = variaveis(esq[-1]) and variaveis(dir[0])
-        #     expr = esq[:-1] + str(result) + dir[1:]
 
-class EspressaoBoleana():
-    def __init__(self, expr_str: str) -> None:
-        self._expr = expr_str.strip()
-    
-    def resolver(self, valor_variaveis: Dict[str, bool]) -> bool:
-        """Resolve esta expressão booleana. Por enquanto, apenas `*` e `+`."""
+class Expr(abc.ABC):
+    def __init__(self, filhos: list) -> None:
+        super().__init__()
+        self._filhos = filhos
+
+    @abc.abstractmethod
+    def resolver(self, variaveis: Dict[str, bool]) -> bool:
         pass
-
+    
     @property
     def qtde_variaveis(self) -> int:
-        pass
+        return len(self.variaveis)
     
     @property
-    def lista_variaveis(self) -> List[str]:
-        pass
+    def variaveis(self) -> Set['str']:
+        vars = set()
+        for filho in self._filhos:
+            vars.update(filho.variaveis)
+
+        return vars
     
-def existe_solucao_para(expr: ExpressaoBooleana, valor_variaveis: list, solucao: bool) -> bool:
-    if len(valor_variaveis) != expr.qtde_variaveis:
-        mapa_variaveis = {var: valor for var}
+    @abc.abstractclassmethod
+    def __str__(self) -> str:
+        pass
+
+
+class And(Expr):
+    def __init__(self, esq: Expr, dir: Expr) -> None:
+        super().__init__([esq, dir])
+        self._esq = esq
+        self._dir = dir
+    
+    def resolver(self, variaveis: Dict[str, bool]) -> bool:
+        return self._esq.resolver(variaveis) and self._dir.resolver(variaveis)
+    
+    def __str__(self) -> str:
+        return f'{self._esq}*{self._dir}'
+
+
+class Or(Expr):
+    def __init__(self, esq: Expr, dir: Expr) -> None:
+        super().__init__([esq, dir])
+        self._esq = esq
+        self._dir = dir
+    
+    def resolver(self, variaveis: Dict[str, bool]) -> bool:
+        return self._esq.resolver(variaveis) or self._dir.resolver(variaveis)
+    
+    def __str__(self) -> str:
+        return f'({self._esq}+{self._dir})'
+
+
+class Not(Expr):
+    def __init__(self, expr: Expr) -> None:
+        super().__init__([expr])
+        self._expr = expr
+    
+    def resolver(self, variaveis: Dict[str, bool]) -> bool:
+        return not self._expr.resolver(variaveis)
+    
+    def __str__(self) -> str:
+        return f'!({self._expr})'
+
+
+class Variavel(Expr):
+    def __init__(self, var: str) -> None:
+        super().__init__(list())
+        self._var = var
+    
+    def resolver(self, variaveis: Dict[str, bool]) -> bool:
+        return variaveis[self._var]
+    
+    @property
+    def variaveis(self) -> Set['str']:
+        return {self._var}
+    
+    def __str__(self) -> str:
+        return self._var
+
+
+class Literal(Expr):
+    def __init__(self, literal: bool) -> None:
+        super().__init__(list())
+        self._literal = literal
+    
+    def resolver(self, variaveis: Dict[str, bool]) -> bool:
+        return self._literal
+    
+    @property
+    def variaveis(self) -> Set['str']:
+        return set()
+    
+    def __str__(self) -> str:
+        return str(self._literal)
+
+
+def existe_solucao_para(expr: Expr, solucao: bool) -> bool:
+    return _existe_solucao_para(expr, [], solucao)
+
+
+def _existe_solucao_para(expr: Expr, valor_variaveis: list, solucao: bool) -> bool:
+    # Caso base
+    if len(valor_variaveis) == expr.qtde_variaveis:
+        mapa_variaveis = {var: valor for var, valor in zip(expr.variaveis, valor_variaveis)}
+        resultado = expr.resolver(mapa_variaveis)
+        print(mapa_variaveis, resultado)
+
+        return resultado == solucao
+
+    # Caso recursivo
     else:
         vars_aumentada_true = valor_variaveis + [True]
         vars_aumentada_false = valor_variaveis + [False]
-        return
+        return True if _existe_solucao_para(expr, vars_aumentada_true, solucao) \
+            else _existe_solucao_para(expr, vars_aumentada_false, solucao)
 
-if __name__ == '__main__':
-    expressao = ExpressaoBooleana('a*b+c*a')
-    if existe_solucao_para(expressao, expressao.variaveis, True):
-        print (f'A expressâo booleana {expressao} possui solução para True.')
-    else:
-        print (f'A expressão booleana {expressao} não possui solução para True.')
+
+# if __name__ == '__main__':
+#     expressao = ExpressaoBooleana('a*b+c*a')
+#     resultado_buscado = False
+#     if existe_solucao_para(expressao, resultado_buscado):
+#         print (f'A expressão booleana {expressao} possui solução para {resultado_buscado}.')
+#     else:
+#         print (f'A expressão booleana {expressao} não possui solução para {resultado_buscado}.')
