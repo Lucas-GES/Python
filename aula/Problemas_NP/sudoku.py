@@ -1,7 +1,7 @@
 from typing import List
 
 class TabuleiroSudoku:          
-
+    contador = 0
 
     def is_solucao(tabuleiro, numero, posicao):        
         
@@ -32,7 +32,8 @@ class TabuleiroSudoku:
         return None
 
     def _existe_solucao_para(tabuleiro) -> bool:
-        encontrar = TabuleiroSudoku.achar_vazio(tabuleiro)
+        encontrar = TabuleiroSudoku.achar_vazio(tabuleiro)        
+        
         if not encontrar:
             return True
         else:
@@ -41,12 +42,13 @@ class TabuleiroSudoku:
         for i in range(1, 10):
             if TabuleiroSudoku.is_solucao(tabuleiro, i, (linha,coluna)):
                 tabuleiro[linha][coluna] = i
+                TabuleiroSudoku.contador += 1               
 
                 if TabuleiroSudoku._existe_solucao_para(tabuleiro):
                     return True
                 
                 tabuleiro[linha][coluna] = 0
-        
+
         return False
 
     def mostrar_tabuleiro(tabuleiro):
@@ -81,5 +83,6 @@ if __name__ == '__main__':
         print(TabuleiroSudoku._existe_solucao_para(tabuleiro))
         print('\n')
         TabuleiroSudoku.mostrar_tabuleiro(tabuleiro)
-        
+        print('\n')
+        print(f"Custo de Caminho: {TabuleiroSudoku.contador}")
         
