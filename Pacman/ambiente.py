@@ -16,7 +16,7 @@ class Ambiente():
         acoes_personagens = {0: None}        
         jogador = 'c'         
     
-        def get_jogador():
+        def get_jogador() -> tuple[int, int]:
             for i in range(len(Ambiente.labirinto)):
                 for j in range(len(Ambiente.labirinto[0])):
                     if Ambiente.labirinto[i][j] == 'c':
@@ -24,7 +24,7 @@ class Ambiente():
                         y = j
                         return x, y
 
-        def get_ponto():
+        def get_ponto() -> tuple[int, int]:
             for i in range(len(Ambiente.labirinto)):
                 for j in range(len(Ambiente.labirinto[0])):
                     if Ambiente.labirinto[i][j] == '.':

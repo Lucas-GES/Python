@@ -1,7 +1,7 @@
 from ambiente import Ambiente
 from actions import Actions
 from agenteBFS import AgenteBFS
-from agenteDFS import AgenteDFS
+from agenteASTAR import Astar
 import os
 
 class Pac():
@@ -12,7 +12,7 @@ class Pac():
         
         print("1 - Humano")
         print("2 - BFS")
-        print("3 - DFS")
+        print("3 - A*")
         case = int(input())
 
         if case == 1:        
@@ -32,7 +32,7 @@ class Pac():
             AgenteBFS.exec()
         
         if case == 3:
-            AgenteDFS.exec()
+            Astar.main()
 
         Ambiente.get_labirinto()
 
