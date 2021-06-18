@@ -1,7 +1,7 @@
 from ambiente import Ambiente
 from actions import Actions
 from agenteBFS import AgenteBFS
-from agenteASTAR import Astar
+from agenteASTAR import Node
 import os
 
 class Pac():
@@ -32,7 +32,7 @@ class Pac():
             AgenteBFS.exec()
         
         if case == 3:
-            Astar.main()
+            Node.main()
 
         Ambiente.get_labirinto()
 
