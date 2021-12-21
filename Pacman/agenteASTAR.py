@@ -19,7 +19,7 @@ class Node():
 
 
     def astar(maze, start, end):
-    
+        
 
     
         start_node = Node(None, start)
